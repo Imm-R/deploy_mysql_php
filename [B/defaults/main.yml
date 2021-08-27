@@ -1,0 +1,36 @@
+---
+# defaults file for deploy_mysql_php
+destin_folder: /var/www/html
+conf_folder: /usr/share/phpmyadmin
+packages:
+- httpd
+  #- phpMyAdmin-5.1.1-all-languages.tar.gz
+- unzip
+- zip
+- tar
+- wget
+mysql_packages:
+        #- mysql:8.0
+- mariadb-server
+- mariadb
+php_packages:
+        #- https://files.phpmyadmin.net/phpMyAdmin/
+php_packages:
+- php
+- php-curl
+- php-fileinfo
+- php-gd
+- php-json
+- php-pdo_mysql
+- php-mbstring
+- php-mysqli
+- php-session
+- php-zlib
+- php-simplexml
+- php-xml
+- php-cli
+- php-domxml
+- php-ldap
+- php-openssl
+- php-xmlrpc
+- php-pecl-apcu
