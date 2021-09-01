@@ -1,9 +1,11 @@
 ---
-# defaults file for deploy_mysql_php
+# defaults file for deploy_wordpress_phpmyadmin
 destin_folder: /var/www/html
-conf_folder: /usr/share/phpmyadmin
+conf_folder: /usr/share/phpmyadmin/
 confd_folder: /etc/httpd/conf.d/
 packages:
+- python3-PyMySQL
+- bzip2
 - vim
 - httpd
 - unzip
