@@ -2,19 +2,17 @@
 # defaults file for deploy_mysql_php
 destin_folder: /var/www/html
 conf_folder: /usr/share/phpmyadmin
+confd_folder: /etc/httpd/conf.d/
 packages:
+- vim
 - httpd
-  #- phpMyAdmin-5.1.1-all-languages.tar.gz
 - unzip
 - zip
 - tar
 - wget
 mysql_packages:
-        #- mysql:8.0
 - mariadb-server
 - mariadb
-php_packages:
-        #- https://files.phpmyadmin.net/phpMyAdmin/
 php_packages:
 - php
 - php-curl
