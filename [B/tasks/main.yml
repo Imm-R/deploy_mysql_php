@@ -1,5 +1,5 @@
 ---
-# tasks file for deploy_mysql_php
+# tasks file for deploy_wordpress_phpmyadmin
 - name: Install packages
   yum: name={{ packages }}
 
@@ -21,27 +21,27 @@
   ansible.builtin.file:
       path: /usr/share/phpmyadmin
       state: directory
-      mode: '0755'
+      mode: '777'
       owner: apache
       group: apache
 
 - name: Extract Archive phpMyAdmin
   ansible.builtin.unarchive:
-        src: phpMyAdmin-5.1.1-all-languages.zip
+        src: https://files.phpmyadmin.net/phpMyAdmin/5.1.1/phpMyAdmin-5.1.1-all-languages.tar.gz
         dest: /usr/share/phpmyadmin
         owner: apache
         group: apache
         extra_opts:
           - --strip=1
- #        remote_src: yes
+        remote_src: yes
 
 - name: Delete Archve
   file:
-    path: /home/ec2-user/phpMyAdmin-5.1.1-all-languages.tar.gz
+    path: /home/ec2-user/phpMyAdmin-5.1.1-all-languages.zip
     state: absent
 
 - name: Make Dirrectory for temp files
-  ansible.builtin.file: path={{ item }} state=directory owner=apache group=apache mode=0755
+  ansible.builtin.file: path={{ item }} state=directory owner=apache group=apache mode=777
   loop:
    - "/var/lib/phpmyadmin/tmp"
    - "/etc/phpmyadmin"
@@ -64,11 +64,15 @@
   loop:
    - "phpmyadmin.conf"
 
-- name: Remove the MySQL test database.
-  mysql_db: db=test state=absent
+- name: Start MariaDB
+  service:
+     name: mariadb
+     enabled: true
+     state: started
 
-- name: Create a database for bacula.
-  mysql_db: "db=bacula state=present"
+- name: Mysql Root Pass
+  mysql_user: name=root password="qweqwe"
 
-- name: Add bacula user and all privileges
-  mysql_user: name=bacula password='*2D34C81704AD060D038AB7B0540EE0757B93B42B' encrypted=yes priv='*.*:ALL' state=present
+- name: Restart Apache
+  service: name=httpd state=restarted
+                                                                          
