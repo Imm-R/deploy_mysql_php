@@ -1,7 +1,5 @@
 ---
 # tasks file for deploy_mysql_php
-#- name: Update
-#  yum: update
 - name: Install packages
   yum: name={{ packages }}
 
@@ -14,21 +12,31 @@
 - name: Restart apache
   service: name=httpd state=started enabled=yes
 
-  #- name: Copy phpMyAdmin 
+  #- name: Copy phpMyAdmin
   # copy:
   # src: phpMyAdmin-5.1.1-all-languages.tar.gz
   # dest: /home/ec2-user
 
+- name: Make Directory for phpmyadmin
+  ansible.builtin.file:
+      path: /usr/share/phpmyadmin
+      state: directory
+      mode: '0755'
+      owner: apache
+      group: apache
+
 - name: Extract Archive phpMyAdmin
-  unarchive:
+  ansible.builtin.unarchive:
         src: phpMyAdmin-5.1.1-all-languages.zip
         dest: /usr/share/phpmyadmin
         owner: apache
         group: apache
-        # remote_src: yes
+        extra_opts:
+          - --strip=1
+ #        remote_src: yes
 
 - name: Delete Archve
-  file: 
+  file:
     path: /home/ec2-user/phpMyAdmin-5.1.1-all-languages.tar.gz
     state: absent
 
@@ -36,7 +44,7 @@
   ansible.builtin.file: path={{ item }} state=directory owner=apache group=apache mode=0755
   loop:
    - "/var/lib/phpmyadmin/tmp"
-   - "/etc/phpmyadmin"     
+   - "/etc/phpmyadmin"
 
      #- name: Create directory for phpMyAdmin configuration files
      #  ansible.builtin.file:
@@ -52,17 +60,15 @@
    - "config.inc.php"
 
 - name: Add phpmyamin.conf for apache
-  copy:
-   src: phpmyadmin.conf
-   dest: /etc/httpd/conf.d/
-   owner: apache
-   group: apache
+  copy: src={{ item }} dest={{ confd_folder }} owner=apache group=apache mode=0755
+  loop:
+   - "phpmyadmin.conf"
 
 - name: Remove the MySQL test database.
   mysql_db: db=test state=absent
 
 - name: Create a database for bacula.
-  mysql_db: "db=bacula state=present"  
+  mysql_db: "db=bacula state=present"
 
-- name: Add bacula user and all privileges  
+- name: Add bacula user and all privileges
   mysql_user: name=bacula password='*2D34C81704AD060D038AB7B0540EE0757B93B42B' encrypted=yes priv='*.*:ALL' state=present
